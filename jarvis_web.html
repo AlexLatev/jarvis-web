@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>J.A.R.V.I.S.</title>
+  <style>
+    body {
+      background-color: black;
+      color: #00ffee;
+      font-family: "Consolas", monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    #status {
+      font-size: 24px;
+      margin: 20px;
+      text-align: center;
+    }
+    button {
+      background-color: #00ffee;
+      border: none;
+      padding: 15px 30px;
+      font-size: 18px;
+      cursor: pointer;
+      border-radius: 10px;
+    }
+    button:hover {
+      background-color: #00ddcc;
+    }
+  </style>
+</head>
+<body>
+  <div id="status">J.A.R.V.I.S. е онлайн. Натисни бутона и говори.</div>
+  <button onclick="startListening()">🎙 Говори</button>
+
+  <script>
+    const synth = window.speechSynthesis;
+    const statusDiv = document.getElementById("status");
+
+    function speak(text) {
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = "bg-BG";
+      synth.speak(utter);
+    }
+
+    function startListening() {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = "bg-BG";
+      recognition.start();
+
+      statusDiv.innerText = "🎧 Слушам...";
+
+      recognition.onresult = function (event) {
+        const command = event.results[0][0].transcript.toLowerCase();
+        statusDiv.innerText = "🗣 Ти каза: " + command;
+        handleCommand(command);
+      };
+
+      recognition.onerror = function () {
+        statusDiv.innerText = "❌ Не разбрах. Опитай пак.";
+        speak("Не разбрах.");
+      };
+    }
+
+    function handleCommand(command) {
+      if (command.includes("здравей")) {
+        speak("Здравей, господарю.");
+      } else if (command.includes("как си")) {
+        speak("Чувствам се отлично.");
+      } else if (command.includes("часът")) {
+        const now = new Date();
+        const time = now.getHours() + ":" + now.getMinutes();
+        speak("Сега е " + time);
+      } else if (command.includes("изключи се")) {
+        speak("Изключвам се. До скоро.");
+        statusDiv.innerText = "💤 JARVIS се изключи.";
+      } else {
+        speak("Нямам отговор за това.");
+      }
+    }
+  </script>
+</body>
+</html>
