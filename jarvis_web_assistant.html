@@ -1,0 +1,80 @@
+
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <title>J.A.R.V.I.S. Web Assistant</title>
+    <style>
+        body {
+            background-color: black;
+            color: #00ffee;
+            font-family: "Consolas", monospace;
+            text-align: center;
+            padding-top: 100px;
+        }
+        #speakBtn {
+            background-color: #00ffee;
+            border: none;
+            color: black;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        #output {
+            margin-top: 40px;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <h1>J.A.R.V.I.S. Interface</h1>
+    <button id="speakBtn">Говори сега</button>
+    <div id="output">Готов за команди...</div>
+
+    <script>
+        const output = document.getElementById("output");
+        const speakBtn = document.getElementById("speakBtn");
+
+        function speak(text) {
+            const synth = window.speechSynthesis;
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.lang = "bg-BG";
+            synth.speak(utter);
+        }
+
+        function handleCommand(command) {
+            command = command.toLowerCase();
+            output.innerText = "Ти каза: " + command;
+            if (command.includes("здравей")) {
+                speak("Здравей, господарю.");
+            } else if (command.includes("часът")) {
+                const now = new Date();
+                speak("Сега е " + now.getHours() + " и " + now.getMinutes() + " минути.");
+            } else if (command.includes("как си")) {
+                speak("Чувствам се отлично.");
+            } else if (command.includes("изключи се")) {
+                speak("Изключвам се. До скоро.");
+            } else {
+                speak("Не разбрах командата.");
+            }
+        }
+
+        speakBtn.onclick = () => {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = "bg-BG";
+            recognition.start();
+            speak("Слушам те.");
+
+            recognition.onresult = (event) => {
+                const command = event.results[0][0].transcript;
+                handleCommand(command);
+            };
+
+            recognition.onerror = () => {
+                speak("Не разбрах.");
+            };
+        };
+    </script>
+</body>
+</html>
